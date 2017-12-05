@@ -1,0 +1,79 @@
+<html>
+
+	<head>
+		<meta charset='utf-8'>
+		<title>giant-bomb</title>
+		<script src='../giant-bomb-browser.js'></script>
+		<script src='./browser-demo.js'></script>
+
+		<style>
+			body, html {
+				margin:0;
+				padding:0;
+			}
+			body {
+				font-family:Helvetica, Arial, sans-serif;
+				padding:12px;
+				box-sizing:border-box;
+			}
+			
+			.page-title, .page-sub-title {
+				margin:0;
+			}
+			.page-sub-title {
+				font-style:italic;
+			}
+
+			#js-platforms-result, #js-search-result {
+				padding:12px;
+				font-weight:bold;
+				border: 2px solid black;
+				border-radius:12px;
+				box-shadow:0 0 6px 2px gray;
+
+			}
+			
+			#js-search-result-title {
+				font-weight:bold;
+				text-decoration:underline;
+			}
+			#js-search-result-deck {
+				max-width:680px;
+			}
+			#js-search-result-image {
+				width: 200px;
+				height: 200px;
+				padding: 12px;
+				border: 2px solid black;
+				border-radius: 49px;
+			}
+		</style>
+	</head>
+
+
+	<body>
+		<h1 class='page-title'>GiantBomb</h1>
+		<h3 class='page-sub-title'>Browser Demo</h3>
+		<div>
+			<input type=text placeholder='Your API key' id='js-key-input'>
+			<button id='js-key-input-submit'>Make Request</button>
+		</div>
+		<p id='js-timeout'></p>
+		<p id='js-platforms-result'></p>
+		<p id='js-search-result'></p>
+		<p id='js-search-result-title'></p>
+		<p id='js-search-result-deck'></p>
+		<img id='js-search-result-image'>
+	</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+

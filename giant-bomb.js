@@ -19,29 +19,56 @@
  * http://www.wtfpl.net/txt/copying/
  */
 
+
 var request = require('request');
+var jsonp = require('jsonp');
+var randomJsonpCallbackName = require('./jsonp-callback-name.js');
+
 
 class GiantBomb{
 	constructor(apiKey, userAgent){
 		this.apiKey = apiKey;
 		this.userAgent =  userAgent;
 		this.baseURL = 'http:///api.giantbomb.com';
+		
+		this._timeout = 12000;
 	}
 
 	_makeRequest(url, callback){
-		var options = {
-			url: url,
-			headers: {
-				'User-Agent': this.userAgent
+
+		// we are in node environment
+		if(process.browser == undefined)
+		{
+			var options = {
+				url: url,
+				headers: {
+					'User-Agent': this.userAgent
+				}
+			};
+			
+			request(options, function(error, response, body){
+				if(!error && response.statusCode == 200){
+					callback(error, response, JSON.parse(body));
+				} else {
+					callback(error, response, body);
+				}
+			});
+		}
+		// we are in browser environment
+		else
+		{
+			var callbackName = randomJsonpCallbackName();
+			url += `&format=jsonp&json_callback=${callbackName}`;
+			
+			var options = {
+				name: callbackName,
+				timeout: this._timeout || 12000
 			}
-		};
-		request(options, function(error, response, body){
-			if(!error && response.statusCode == 200){
-				callback(error, response, JSON.parse(body));
-			} else {
-				callback(error, response, body);
-			}
-		});
+			
+			jsonp(url, options, function(error, jsonResponse){
+				callback(error, null, jsonResponse);
+			});
+		}
 	}
 
 	_buildURL(type, options){
@@ -54,18 +81,25 @@ class GiantBomb{
 		var filter = options.filter;
 		var sort = options.sort;
 
-		var url = `${this.baseURL}/${type}` +
-	 			  `/${id ? id : ''}` +
-		          `/?api_key=${this.apiKey}` + 
-		          `${query ? '&query=' + query : ''}` +
-		          `${resources ? '&resources=' + resources.join(',') : ''}` +
-		          `${fields ? '&field_list=' + fields.join(',') : ''}` +
-		          `&offset=${offset}&limit=${limit}&format=json` + 
-		          `${filter ? `&filter=${filter}` : ''}` + 
-		          `${sort ? `&sort=${sort}` : ''}`;
+		var url = `${this.baseURL}/${type}/` +
+			`/${id ? id : ''}` +
+			`/?api_key=${this.apiKey}` + 
+			`${query ? '&query=' + query : ''}` +
+			`${resources ? '&resources=' + resources.join(',') : ''}` +
+			`${fields ? '&field_list=' + fields.join(',') : ''}` +
+			`&offset=${offset}&limit=${limit}&format=json` + 
+			`${filter ? `&filter=${filter}` : ''}` + 
+			`${sort ? `&sort=${sort}` : ''}`;
 		url = url.replace(/\/\//g, '/');
 
 		return url;
+	}
+	
+	setTimeout(timeout){
+		this._timeout = timeout;
+	}
+	getTimeout(){
+		return this._timeout;
 	}
 
 	search(options, callback){
@@ -336,4 +370,8 @@ class GiantBomb{
 	}				
 }
 
+if(process.browser == true)
+{
+	window.GiantBomb = GiantBomb;
+}
 module.exports = GiantBomb;

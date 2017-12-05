@@ -1,18 +1,27 @@
 # Giant Bomb API Wrapper 
-A Giant Bomb API Wrapper written for NodeJS. Easily pull information on games, franchises, platforms, etc. from the largest video game database on the internet.
+A Giant Bomb API Wrapper written for NodeJS and browsers. Easily pull information on games, franchises, platforms, etc. from the largest video game database on the internet.
 
 ## Installation (Requires Node v6 or higher)
 `npm install giant-bomb`
 
+## Installation (Browser)
+Download [**giant-bomb-browser.js**]('giant-bomb-browser.js') from the repository and include it in a script tag.  
+`<script src="giant-bomb-browser.js"></script>`
+
 ## Setup 
+**Node**  
 ```javascript
 var GiantBomb = require('giant-bomb');
 var gb = new GiantBomb('your api key', 'unique user-agent');
 ```
+**Browser**  
+```javascript
+var gb = new GiantBomb('your api key');
+```
 
 
 ### User-Agent? 
-YES! You now MUST provide a unique User-Agent. This changed sometime during summer 2016 and broke a lot of code. 
+YES! You now MUST provide a unique User-Agent unless you're using the browser version. This changed sometime during summer 2016 and broke a lot of code. 
 
 This User-Agent can be whatever you want, but it should at least relate to your application: 
 
@@ -46,10 +55,24 @@ Outputs:
 can choose from over 20 "action figure"-esque Heroes, each with their own unique weapons and abilities."
 ```
 
-## Documentation 
+## Documentation  
 Note: This readme is not a substitution for actual documentation. 
 
 Please read over the documentation at https://github.com/jacobjordan94/giant-bomb/wiki
+
+## Browser Differences
+The API is the same in both Node and Browser environments except for some minor differences in the Browser version.
+- Browser requests are made using *jsonp*
+- The callbacks' **_response_** argument is always null
+***
+- Non API errors, such as *404 not found*, and *500 server errors* will invoke the callback with a generic timeout error and only after a timeout period defined by default or by calling **setTimeout()** as show below **(timeout in miliseconds)**
+```
+var gb = new GiantBomb(...);
+gb.setTimout(12000);
+```
+***
+- Valid requests that take longer to respond than the timeout period discussed above, will result in an error and cancellation of the request.
+- Your API key may be exposed to others. Only use the browser version for learning, portfolio projects, and testing.
 
 ## Searching for a resource
 You can test the following code at https://tonicdev.com/npm/giant-bomb 
